@@ -219,8 +219,151 @@ console.log(a.reverse());   // 将数组颠倒顺序
 
 /**
  * sort(), 排序。当不带参数调用sort()时，数组元素以字母顺序排序
- * 如果包含undefined元素，它们会被排到数组的末尾
+ * 如果包含undefined元素，它们会被排到数组的末尾。
  */
 var a = ["banana", "cherry", "apple"];
 a.sort();
 console.log(a);
+
+var a = [33, 4, 1111, 222];
+a.sort()
+console.log(a); // => [ 1111, 222, 33, 4 ], 字母表顺序
+
+/**
+ * 
+ * 为了按照其他方式而非字母表顺序进行数组排序，必须给sort()方法传递一个比较函数。
+ * 该函数决定了它的两个参数在排好序的数组中的先后顺序。
+ * 假设第一个参数应该在前，比较函数应该返回一个小于0的数值。
+ * 反之，假设第一个参数应该在后，函数应该返回一个大于0的数值。
+ * 并且，假设两个值相等，函数应该返回0。
+ * 
+ */
+a.sort(function (a, b) {
+    return a-b;
+});
+console.log(a); // => [ 4, 33, 222, 1111 ]
+
+// 
+var a = [1, 2, 3];
+var b = a.concat(4, 5); // 创建一个新的数组
+console.log(a); // => [ 1, 2, 3 ]
+console.log(b); // => [ 1, 2, 3, 4, 5 ]
+
+
+var a = [1, 2, 3, 4, 5];
+var b = a.slice(0, 3);  // => [1, 2, 3]
+console.log(b);
+b = a.slice(3);         // => [4, 5]
+console.log(b);
+
+[1, 2, 3, 4].forEach((value, index, array) => {
+    console.log("index: %d", index);
+    console.log("value: %d", value);
+    console.log(array[index]);
+});
+
+var b = [1, 2, 3, 4].map((value, index) => {
+   if (index % 2 === 0) {
+       return value;
+   } else {
+       return value * value * value;
+   }
+});
+console.log(b);
+
+var b = [1, 2, 3, 4, 5, 6].filter((value) => {
+    return value % 2 === 0;
+});
+console.log(b);
+
+var rsl1 = [1, 2, 3, 4, 5].every(function (value) {
+    return value < 10;
+}); // => true, 所有值都小于10
+console.log(rsl1);
+
+var rsl2 = [1, 2, 3, 4, 5].every(function (value) {
+    return value % 2 === 0;
+}); // => false, 不是所有的数都是偶数
+console.log(rsl2);
+
+var rsl3 = [1, 2, 3, 4, 5].some((value, index) => {
+    return value % 2 === 0
+}); // => true, 含有偶数
+console.log(rsl3);
+
+var rsl4 = [1, 2, 3, 4, 5].some(value => {
+    return value > 10;
+})  // => false， 不含有大于10的数
+console.log(rsl4);
+
+// 判断是否数组类型
+console.log(Array.isArray([1, 2, 3]));  // => true
+console.log(Array.isArray({name: "Simon"}));  // => false
+
+var o = {
+    m: function () {
+        var self = this;
+        console.log("this === o: ", this === o)
+        var f = function() {
+            console.log("this === o", this === o);
+            console.log("this === o", this);
+        }
+        f();
+    }
+}
+o.m();
+
+console.log("---- this ----")
+/**
+ * 全局中的this默认是一个空对象。全局中的this指向的是module.exports
+ *
+ */
+console.log(this);  // => {}, 全局中的this默认是一个空对象
+this.num = 10;
+console.log(this.num);      // => 10
+console.log(global.num);    // => undefined
+
+console.log("module.exports: ", module.exports);    // => { num: 10 }
+console.log("module.exports.num: ", module.exports.num);    // => 10
+
+/**
+ * 函数中的this 指向 global 对象
+ *
+ */
+function fn() {
+    this.num1 = 11;
+}
+fn();
+console.log(this);          // => {}
+console.log(this.num1);     // => undefined
+console.log(global.num1);   // => 11
+
+
+/**
+ * 构造函数中的 this 指向的是它的实例，而不是global
+ * @constructor
+ */
+
+function Fn() {
+    this.num2 = 998
+}
+
+let fn1 = new Fn();
+console.log(fn1.num2);  // => 998
+console.log(global.num2);   // => undefined
+
+
+console.log("\n---- function ----\n");
+
+function max() {
+    let max = Number.NEGATIVE_INFINITY;
+    for (let i=0; i<arguments.length; i++) {
+        if (arguments[i] > max) {
+            max = arguments[i];
+        }
+    }
+    return max;
+}
+
+let largest = max(100, 1000, 1, 2, 10, 4, 5, 10000, 6); // => 10000
+console.log("largest: ", largest);
