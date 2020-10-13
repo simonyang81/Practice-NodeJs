@@ -19,7 +19,7 @@ function inherit(p) {
     if (Object.create) {    // 如果Object.create()存在，直接使用它
         return Object.create(p);
     }
-    var t = typeof p;   // 否则进一步检查
+    let t = typeof p;   // 否则进一步检查
     if (t !== "object" && t !== "function") {
         throw TypeError();
     }
@@ -357,6 +357,7 @@ console.log("\n---- function ----\n");
 
 function max() {
     let max = Number.NEGATIVE_INFINITY;
+    // arguments, 并不是真正的数组，它是一个实参对象。具有以数字为索引的属性。
     for (let i=0; i<arguments.length; i++) {
         if (arguments[i] > max) {
             max = arguments[i];
@@ -367,3 +368,106 @@ function max() {
 
 let largest = max(100, 1000, 1, 2, 10, 4, 5, 10000, 6); // => 10000
 console.log("largest: ", largest);
+
+function f(x) {
+
+    // arguments, 指代所有的参数
+    // 如下 arguments[0] 和 x，指代同一个值
+
+    console.log("x: ", x);
+    arguments[0] = null;
+    console.log("x: ", x);
+}
+
+f(10);
+
+// callee属性指代当前正在执行的函数
+let factorial = function (x) {
+    if (x <= 1) return 1;
+
+    return x * arguments.callee(x-1);
+}
+
+let res = factorial(5);
+console.log("res: ", res)
+
+function arraycopy(from, from_start, to, to_start, length) {
+    //
+    // ...
+    //
+    console.log("from: ", from);
+    console.log("from_start: ", from_start);
+    console.log("to: ", to);
+    console.log("to_start: ", to_start);
+    console.log("length: ", length);
+
+    // isNaN 检查是否是非法数字
+    console.log("5 isNaN: ", isNaN(5));     // => false
+    console.log("'5' isNaN: ", isNaN("5")); // => false
+    console.log("'2020/10/08 isNaN: ", isNaN("2020/10/08"));    // => true
+}
+
+function easycopy(args) {
+    arraycopy(args.from,
+        args.from_start || 0,    // 设置默认值为0
+        args.to,
+        args.to_start || 0, // 设置默认值为0
+        args.length);
+}
+
+// easycopy调用方式
+let array1 = [1, 2, 3, 4, 5];
+let array2 = [];
+easycopy({from: array1, to: array2, length: 4});
+easycopy({from: array1, from_start: 1, to: array2, length: 4});
+
+const scope = "global scope";
+
+function checkscope() {
+    let scope = "local scope";
+
+    function f() {
+        return scope;
+    }
+
+    return f;   // 返回函数对象
+}
+
+console.log(checkscope()());  // => local scope
+
+let uniqueInteger = (function () {
+    let counter = 0;
+    return function () {return counter++;}
+}());
+
+console.log("-->> uniqueInteger <<--")
+console.log("once: ", uniqueInteger());
+console.log("twice: ", uniqueInteger());
+console.log("3 times: ", uniqueInteger());
+console.log("---------\n")
+
+
+function counter() {
+    let n = 0;
+
+    return {
+        count: function () {
+            return n++;
+        },
+        reset: function () {
+          n = 0;
+        }
+    }
+}
+
+let cc1 = counter(), dd1 = counter();
+console.log(cc1.count());   // => 0
+console.log(cc1.count());   // => 1
+console.log(cc1.count());   // => 2
+
+console.log(dd1.count());   // => 0，dd1 和 cc1 互相并不干扰
+console.log(cc1.count());   // => 3
+cc1.reset();    // 重置cc1
+console.log(cc1.count());   // => 0
+console.log(dd1.count());   // => 1
+
