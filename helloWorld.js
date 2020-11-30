@@ -1,6 +1,19 @@
 let http = require('http');
 let fs = require('fs');
 
+let server = http.createServer(function (req, res) {
+
+    console.log("req.method: ", req.method);
+
+    let body = "Hello World";
+    // res.setHeader('Context-Length', body.length + 1);
+    res.setHeader('Context-Type', 'text/plain');
+    res.statusCode = 200;
+    res.end(body);
+});
+
+server.listen(3001)
+
 function serveStaticFile(res, path, contentType, responseCode) {
     if (!responseCode) {
         responseCode = 200;
